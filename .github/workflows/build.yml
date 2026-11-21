@@ -32,7 +32,9 @@ jobs:
           cache: gradle
 
       - name: 3. Instalar Android SDK (platform 35 / build-tools 35.0.0)
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools platforms;android-35 build-tools;35.0.0
 
       - name: 4. Garantir permissão de execução do Gradle wrapper
         run: chmod +x ./gradlew
