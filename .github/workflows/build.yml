@@ -1,0 +1,66 @@
+name: Build Android APK (ServicoFedex)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: servicofedex-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Testar e gerar APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 1. Baixar código-fonte
+        uses: actions/checkout@v4
+
+      - name: 2. Instalar JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: 3. Instalar Android SDK (platform 35 / build-tools 35.0.0)
+        uses: android-actions/setup-android@v3
+
+      - name: 4. Garantir permissão de execução do Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: 5. Rodar testes unitários e gerar APKs
+        run: ./gradlew testDebugUnitTest assembleDebug assembleRelease --no-daemon --stacktrace
+
+      - name: 6. Enviar APK de depuração (instalável)
+        uses: actions/upload-artifact@v4
+        with:
+          name: servicofedex-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: 7. Enviar APK de release (sem assinatura)
+        uses: actions/upload-artifact@v4
+        with:
+          name: servicofedex-release-unsigned-apk
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: 8. Enviar relatório dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: servicofedex-test-results
+          path: app/build/reports/tests/testDebugUnitTest
+          if-no-files-found: warn
+          retention-days: 14

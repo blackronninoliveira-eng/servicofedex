@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema de janela apenas; a interface é 100% Jetpack Compose.
+         Todas as cores aqui vêm da paleta obrigatória do aplicativo. -->
+    <style name="Theme.ServicoFedex" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/palette_dark</item>
+        <item name="android:statusBarColor">@color/palette_dark</item>
+        <item name="android:navigationBarColor">@color/palette_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">@color/palette_yellow</item>
+    </style>
+</resources>
